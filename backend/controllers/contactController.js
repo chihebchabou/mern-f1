@@ -20,10 +20,10 @@ controller.getContacts = asyncHandler(async (req ,res) => {
  * @access Private
  */
 controller.setContact =asyncHandler(async (req ,res) => {
-  // if (!req.body.name) {
-  //   res.status(400)
-  //   throw new Error('name is required')
-  // }
+  if (!req.body.name) {
+    res.status(400)
+    throw new Error('name is required')
+  }
 
   const errors = validationResult(req);
   if(!errors.isEmpty()) {
