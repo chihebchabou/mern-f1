@@ -10,7 +10,7 @@ const controller = {}
  * @access Private
  */
 controller.getContacts = asyncHandler(async (req ,res) => {
-  const contacts = await Contact.find()
+  const contacts = await Contact.find({user: req.user.id});
   res.status(200).json(contacts);
 });
 
@@ -34,7 +34,7 @@ controller.setContact =asyncHandler(async (req ,res) => {
 
   const {name, email, phone, type} = req.body;
 
-  const contact = await Contact.create({name, email, phone, type})
+  const contact = await Contact.create({user: req.user.id, name, email, phone, type})
 
   res.status(201).json(contact)
 });
@@ -49,6 +49,12 @@ controller.updateContact = asyncHandler(async (req ,res) => {
   if (!contact) {
     res.status(400);
     throw new Error('Contact not found');
+  }
+
+  // Make sure the logged in user matches the contact user
+  if (contact.user.toString() !== req.user.id) {
+    res.status(401);
+    throw new Error('User not authorized');
   }
 
   const updatedContact = await Contact.findByIdAndUpdate(req.params.id, req.body, {new: true})
@@ -67,6 +73,12 @@ controller.deleteContact = asyncHandler(async (req ,res) => {
   if (!contact) {
     res.status(400);
     throw new Error('Contact not found');
+  }
+
+  // Make sure the logged in user matches the contact user
+  if (contact.user.toString() !== req.user.id) {
+    res.status(401);
+    throw new Error('User not authorized');
   }
 
   await contact.remove()
