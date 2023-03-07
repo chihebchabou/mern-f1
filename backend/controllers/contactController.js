@@ -10,6 +10,11 @@ const controller = {}
  * @access Private
  */
 controller.getContacts = asyncHandler(async (req ,res) => {
+  // Check if user exists
+  if (!req.user) {
+    res.status(401);
+    throw new Error('User not found');
+  }
   const contacts = await Contact.find({user: req.user.id});
   res.status(200).json(contacts);
 });
@@ -32,6 +37,12 @@ controller.setContact =asyncHandler(async (req ,res) => {
     throw new Error(errors.array().map(error => error.msg).join("\n"))
   }
 
+  // Check if user exists
+  if (!req.user) {
+    res.status(401);
+    throw new Error('User not found');
+  }
+
   const {name, email, phone, type} = req.body;
 
   const contact = await Contact.create({user: req.user.id, name, email, phone, type})
@@ -49,6 +60,12 @@ controller.updateContact = asyncHandler(async (req ,res) => {
   if (!contact) {
     res.status(400);
     throw new Error('Contact not found');
+  }
+  
+  // Check if user exists
+  if (!req.user) {
+    res.status(401);
+    throw new Error('User not found');
   }
 
   // Make sure the logged in user matches the contact user
@@ -73,6 +90,12 @@ controller.deleteContact = asyncHandler(async (req ,res) => {
   if (!contact) {
     res.status(400);
     throw new Error('Contact not found');
+  }
+
+  // Check if user exists
+  if (!req.user) {
+    res.status(401);
+    throw new Error('User not found');
   }
 
   // Make sure the logged in user matches the contact user
