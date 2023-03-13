@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
-import { useDispatch } from 'react-redux';
-import { createContact } from '../features/contacts/contactSlice';
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import { createContact, updateContact, unsetCurrent } from '../features/contacts/contactSlice';
 
 const ContactForm = () => {
   const [contact, setContact] = useState({
@@ -11,18 +11,40 @@ const ContactForm = () => {
   });
 
   const dispatch = useDispatch();
+  const { current } = useSelector(state => state.contacts);
   const {name, email, phone, type } = contact;
 
   const onChange = e => setContact({...contact, [e.target.name]: e.target.value});
 
   const onSubmit = e => {
     e.preventDefault();
-    dispatch(createContact({name, email, phone, type }));
+    if (current === null) dispatch(createContact({name, email, phone, type }));
+    else dispatch(updateContact(contact))
+    clearAll();
+  };
+
+  const clearAll = () => {
+    if (current !== null) {
+      dispatch(unsetCurrent())
+    }
   }
 
+  useEffect(()=>{
+    if (current !== null) {
+      setContact(current)
+    } else {
+      setContact({
+        name: '',
+        email: '',
+        phone: '',
+        type: 'personal',
+      });
+    }
+  }, [current])
+
   return (
-    <form onSubmit={onSubmit}>
-      <h2>Add Contact</h2>
+    <form onSubmit={onSubmit} className="mb-3">
+      <h2>{current ? 'Update' : 'Add'} Contact</h2>
       <div className="mb-3">
         <label htmlFor="name" className="form-label">
           Name
@@ -90,9 +112,12 @@ const ContactForm = () => {
         />
         Personal
       </div>
-      <div className="d-grid gap-2">
-        <button className="btn btn-primary">Add Contact</button>
+      <div className="d-grid gap-2 mb-3">
+        <button type='submit' className="btn btn-primary">{current ? 'Update' : 'Add'} Contact</button>
       </div>
+      {current && <div className="d-grid gap-2">
+        <button type='button' className="btn btn-light" onClick={() => clearAll()}> Clear </button>
+      </div>}
     </form>
   )
 }

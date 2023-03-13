@@ -26,9 +26,35 @@ const getContacts = async (token) => {
   return response.data
 };
 
+// Update user contact
+const updateContact = async (contactData, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  };
+
+  const response = await axios.put(API_URL + contactData._id, contactData, config);
+  return response.data
+};
+
+// Delete user contact
+const deleteContact = async (contactId, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  };
+
+  const response = await axios.delete(API_URL + contactId, config);
+  return response.data
+};
+
 const contactService = {
   createContact,
-  getContacts
+  getContacts,
+  updateContact,
+  deleteContact
 };
 
 export default contactService;

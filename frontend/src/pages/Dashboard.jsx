@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import ContactForm from '../components/ContactForm';
+import Contacts from '../components/Contacts';
 import Spinner from '../components/Spinner';
 import { getContacts, reset } from '../features/contacts/contactSlice';
 
@@ -29,7 +30,7 @@ const Dashboard = () => {
     return () => {
       dispatch(reset());
     }
-  }, [user, isError, message, navigate]);
+  }, [user, isError, message, navigate, dispatch]);
 
   if (isLoading) {
     return <Spinner />
@@ -38,8 +39,10 @@ const Dashboard = () => {
   return user && <div className='container mt-5'>
     <h5>Welcome <span className="text-primary">{user.name}</span></h5>
     <div className="row">
-      <div className="col"><ContactForm /></div>
-      <div className="col"></div>
+      <div className="col-md-6"><ContactForm /></div>
+      <div className="col-md-6">
+        <Contacts />
+      </div>
     </div>
   </div>;
 };
